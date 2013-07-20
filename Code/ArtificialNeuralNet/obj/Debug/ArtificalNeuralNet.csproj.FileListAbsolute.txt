@@ -1,0 +1,6 @@
+C:\Users\sethr_000\Documents\GitHub\ArtificialNeuralNet\Code\ArtificalNeuralNet\bin\Debug\ArtificalNeuralNet.dll
+C:\Users\sethr_000\Documents\GitHub\ArtificialNeuralNet\Code\ArtificalNeuralNet\bin\Debug\ArtificalNeuralNet.pdb
+C:\Users\sethr_000\Documents\GitHub\ArtificialNeuralNet\Code\ArtificalNeuralNet\bin\Debug\ArtificalNeuralNet.dll.CodeAnalysisLog.xml
+C:\Users\sethr_000\Documents\GitHub\ArtificialNeuralNet\Code\ArtificalNeuralNet\obj\Debug\ArtificalNeuralNet.csprojResolveAssemblyReference.cache
+C:\Users\sethr_000\Documents\GitHub\ArtificialNeuralNet\Code\ArtificalNeuralNet\obj\Debug\ArtificalNeuralNet.dll
+C:\Users\sethr_000\Documents\GitHub\ArtificialNeuralNet\Code\ArtificalNeuralNet\obj\Debug\ArtificalNeuralNet.pdb

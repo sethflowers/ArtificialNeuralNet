@@ -1,0 +1,7 @@
+C:\Users\sethr_000\Documents\GitHub\ArtificialNeuralNet\Tests\ArtificialNeuralNet.Tests\bin\Debug\ArtificialNeuralNet.Tests.dll
+C:\Users\sethr_000\Documents\GitHub\ArtificialNeuralNet\Tests\ArtificialNeuralNet.Tests\bin\Debug\ArtificialNeuralNet.Tests.pdb
+C:\Users\sethr_000\Documents\GitHub\ArtificialNeuralNet\Tests\ArtificialNeuralNet.Tests\obj\Debug\ArtificialNeuralNet.Tests.csprojResolveAssemblyReference.cache
+C:\Users\sethr_000\Documents\GitHub\ArtificialNeuralNet\Tests\ArtificialNeuralNet.Tests\obj\Debug\ArtificialNeuralNet.Tests.dll
+C:\Users\sethr_000\Documents\GitHub\ArtificialNeuralNet\Tests\ArtificialNeuralNet.Tests\obj\Debug\ArtificialNeuralNet.Tests.pdb
+C:\Users\sethr_000\Documents\GitHub\ArtificialNeuralNet\Tests\ArtificialNeuralNet.Tests\bin\Debug\ArtificialNeuralNet.dll
+C:\Users\sethr_000\Documents\GitHub\ArtificialNeuralNet\Tests\ArtificialNeuralNet.Tests\bin\Debug\ArtificialNeuralNet.pdb
