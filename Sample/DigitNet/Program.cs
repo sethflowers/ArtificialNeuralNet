@@ -9,6 +9,8 @@ namespace DigitNet
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using ArtificialNeuralNet;
+    using GeneticAlgorithm;
 
     /// <summary>
     /// A demonstration of using neural networks for digit classification (OCR).
@@ -22,9 +24,47 @@ namespace DigitNet
         {
             List<TrainingData> trainingDataCollection = LoadTrainingData();
 
-            Console.WriteLine(trainingDataCollection.Count);
-            Console.WriteLine(trainingDataCollection[0].Digit);
+            ////ChromosomeFitnessCalculator<double> fitnessCalculator =
+            ////    new GenericFitnessCalculator<double>(chromosome =>
+            ////        {
 
+            ////        });
+
+            ////GA<double> ga = new GA<double>(fitnessCalculator);
+            ////ChromosomeCollection<double> beginningPopulation = new ChromosomeCollection<double>();
+            ////for (int i = 0; i < 100; i++)
+            ////{
+            ////    beginningPopulation.Add(new Chromosome<double>());
+            ////}
+
+            // There are 784 inputs, because the image is 28x28 pixels.
+            NeuralNet neuralNet = new NeuralNet(new[] { 784, 50, 10 });
+
+            int amountCorrect = 0;
+
+            foreach (TrainingData trainingData in trainingDataCollection.Take(1000))
+            {
+                IList<double> dataAsDoubles = trainingData.Data.Select(b => (double)b / byte.MaxValue).ToList();
+                IList<double> output = neuralNet.Think(dataAsDoubles).ToList();
+
+                double currentMax = double.MinValue;
+                int actualValue = int.MinValue;
+
+                for (int i = 0; i < output.Count; i++)
+                {
+                    if (output[i] > currentMax)
+                    {
+                        currentMax = output[i];
+                        actualValue = i;
+                    }
+                }
+
+                amountCorrect += trainingData.Digit == actualValue ? 1 : 0;
+
+            ////    Console.WriteLine("{0}, Expected: {1}, Actual: {2}", trainingData.Digit == actualValue ? "Success" : "Fail", trainingData.Digit, actualValue);
+            }
+            
+            Console.WriteLine("Amount correct: {0}", amountCorrect);
             Console.WriteLine("Done - hit enter to continue.");
             Console.ReadLine();
         }
