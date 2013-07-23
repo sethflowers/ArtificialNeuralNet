@@ -89,6 +89,55 @@ namespace ArtificialNeuralNet.Tests
         }
 
         /// <summary>
+        /// Validates that the constructor throws a meaningful exception if the weights and biases argument is null.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Constructor_WeightsAndBiasesInitializationIsNull_ThrowsMeaningfulException()
+        {
+            try
+            {
+                new NeuralNet(
+                    neuronsPerLayer: new[] { 1, 3, 1 },
+                    weightsAndBiases: null);
+            }
+            catch (ArgumentNullException exception)
+            {
+                Assert.AreEqual(
+                    string.Format("Unable to initialize a neural net with null initialization data.{0}Parameter name: weightsAndBiases", Environment.NewLine),
+                    exception.Message);
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Validates that the constructor throws a meaningful exception if the weights and biases argument is less than the correct length.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void Constructor_WeightsAndBiasesInitializationDataNotCorrectLength_ThrowsMeaningfulException()
+        {
+            try
+            {
+                new NeuralNet(
+                    neuronsPerLayer: new[] { 1, 3, 1 },
+                    weightsAndBiases: new[] { 0d });
+            }
+            catch (ArgumentException exception)
+            {
+                // There should be 2 for the first layer.
+                // There should be 6 for the second layer.
+                // There should be 4 for the third layer.
+                Assert.AreEqual(
+                    string.Format("The total number of weights and biases to initialize the neural net is not the required amount of 12.{0}Parameter name: weightsAndBiases", Environment.NewLine),
+                    exception.Message);
+
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Validates that the constructor creates the correct number of layers.
         /// </summary>
         [TestMethod]
@@ -198,6 +247,42 @@ namespace ArtificialNeuralNet.Tests
         }
 
         /// <summary>
+        /// Validates that the neurons are initialized with the correct bias and weights from the constructor.
+        /// </summary>
+        [TestMethod]
+        public void Constructor_InitializationData_UsedCorrectlyForBiasesAndWeights()
+        {
+            double[] initializationData = new[] 
+            {
+                0.1, 0.2, // the first nodes bias and weight
+                0.3, 0.4, // the second nodes bias and weight
+                0.5, 0.6, // the third nodes bias and weight
+                0.7, 0.8, 0.9 // the fourth nodes bias and two weights
+            }; 
+
+            NeuralNet neuralNet = new NeuralNet(
+                neuronsPerLayer: new[] { 1, 2, 1 },
+                weightsAndBiases: initializationData);
+
+            // Validate the single node in the input layer is initialized correctly.
+            Assert.AreEqual(0.1, neuralNet.Layers[0].Neurons[0].Bias, "Layer 1 Node 1 bias");
+            Assert.AreEqual(0.2, neuralNet.Layers[0].Neurons[0].Inputs[0].Weight, "Layer 1 Node 1 Input 1 weight");
+
+            // Validate the first node in the hidden layer is initialized correctly.
+            Assert.AreEqual(0.3, neuralNet.Layers[1].Neurons[0].Bias, "Layer 2 Node 1 bias");
+            Assert.AreEqual(0.4, neuralNet.Layers[1].Neurons[0].Inputs[0].Weight, "Layer 2 Node 1 Input 1 weight");
+
+            // Validate the second node in the hidden layer is initialized correctly.
+            Assert.AreEqual(0.5, neuralNet.Layers[1].Neurons[1].Bias, "Layer 2 Node 2 bias");
+            Assert.AreEqual(0.6, neuralNet.Layers[1].Neurons[1].Inputs[0].Weight, "Layer 2 Node 2 Input 1 weight");
+
+            // Validate the single node in the output layer is initialized correctly.
+            Assert.AreEqual(0.7, neuralNet.Layers[2].Neurons[0].Bias, "Layer 3 Node 1 bias");
+            Assert.AreEqual(0.8, neuralNet.Layers[2].Neurons[0].Inputs[0].Weight, "Layer 3 Node 1 Input 1 weight");
+            Assert.AreEqual(0.9, neuralNet.Layers[2].Neurons[0].Inputs[1].Weight, "Layer 3 Node 1 Input 2 weight");
+        }
+
+        /// <summary>
         /// Validates that Think throws a meaningful exception if the inputs argument is null.
         /// </summary>
         [TestMethod]
@@ -265,7 +350,7 @@ namespace ArtificialNeuralNet.Tests
             // If the input is 0.3, and no nodes have biases,
             double expectedOutputOfFirstNode = 1 / (1 + Math.Pow(Math.E, -(0.5 * 0.3)));
             double expectedOutputOfNet = 1 / (1 + Math.Pow(Math.E, -(0.25 * expectedOutputOfFirstNode)));
-            
+
             // Validate that we got the correct output.
             Assert.IsNotNull(output);
             Assert.AreEqual(1, output.Count());

@@ -1,3 +1,8 @@
+The code has only been unit tested - there is not yet a proof of concept!
+==
+Use at your own risk
+
+
 Artificial Neural Net
 ==
 An implementation of a simple feed-forward artificial neural network.

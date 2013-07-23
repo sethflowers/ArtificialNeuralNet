@@ -8,6 +8,7 @@ namespace ArtificialNeuralNet
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Globalization;
     using System.Linq;
 
     /// <summary>
@@ -43,7 +44,7 @@ namespace ArtificialNeuralNet
             {
                 throw new ArgumentException("A neural net cannot have a layer with no inputs.", "neuronsPerLayer");
             }
-            
+
             // Instantiate the layers collection.
             this.Layers = new Collection<Layer>();
 
@@ -80,6 +81,59 @@ namespace ArtificialNeuralNet
             foreach (Neuron neuron in this.Layers.Last().Neurons)
             {
                 neuron.Outputs.Add(new Synapse());
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NeuralNet" /> class.
+        /// </summary>
+        /// <param name="neuronsPerLayer">The neurons per layer.</param>
+        /// <param name="weightsAndBiases">The weights and biases to initialize the net with.</param>
+        /// <exception cref="System.ArgumentException">
+        /// Unable to initialize a neural net with empty or null initialization data.;weightsAndBiases
+        /// or
+        /// The total number of weights and biases to initialize the neural net is not the required amount of {0}.;weightsAndBiases
+        /// </exception>
+        public NeuralNet(int[] neuronsPerLayer, double[] weightsAndBiases)
+            : this(neuronsPerLayer)
+        {
+            if (weightsAndBiases == null)
+            {
+                throw new ArgumentNullException("weightsAndBiases", "Unable to initialize a neural net with null initialization data.");
+            }
+
+            // The first layer has a single input and bias for each node.
+            int requiredInitializationCount = neuronsPerLayer[0] * 2;
+
+            for (int i = 1; i < neuronsPerLayer.Length; i++)
+            {
+                // A bias is required for each neuron in the layer.
+                requiredInitializationCount += neuronsPerLayer[i];
+
+                // A synapse with a weight connects each node in the current layer to the previous layer.
+                requiredInitializationCount += neuronsPerLayer[i] * neuronsPerLayer[i - 1];
+            }
+
+            if (weightsAndBiases.Length != requiredInitializationCount)
+            {
+                throw new ArgumentException(
+                    string.Format(CultureInfo.CurrentCulture, "The total number of weights and biases to initialize the neural net is not the required amount of {0}.", requiredInitializationCount),
+                    "weightsAndBiases");
+            }
+
+            int currentIndex = 0;
+
+            foreach (Layer layer in this.Layers)
+            {
+                foreach (Neuron neuron in layer.Neurons)
+                {
+                    neuron.Bias = weightsAndBiases[currentIndex++];
+
+                    foreach (Synapse synapse in neuron.Inputs)
+                    {
+                        synapse.Weight = weightsAndBiases[currentIndex++];
+                    }
+                }
             }
         }
 
