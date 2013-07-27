@@ -43,6 +43,8 @@ namespace DigitNet
         /// <param name="trainingDataCollection">The collection of data with which to train the neural nets.</param>
         private static void Run(IList<TrainingData> trainingDataCollection)
         {
+            int populationSize = 100;
+
             // The input layer needs a neuron for each pixel in a 28x28 image.
             // The output layer needs a neuron for each number from 0 to 9.
             int totalNeuronsInInputLayer = 28 * 28;
@@ -62,9 +64,7 @@ namespace DigitNet
 
             // Create the initial population of weights and biases for a collection of neural nets.
             ChromosomeCollection<double> beginningPopulation =
-                GetBeginningPopulation(
-                    populationSize: 100,
-                    totalInitializationDataPerNet: totalInitializationDataPerNet);
+                GetBeginningPopulation(populationSize, totalInitializationDataPerNet);
 
             // Create a callback that allows us to provide a fitness for each chromosome.
             // Each chromosome represents the weights and biases for a single neural net.
@@ -73,10 +73,36 @@ namespace DigitNet
                 new GenericFitnessCalculator<double>(chromosome =>
                     GetFitnessForNet(trainingDataCollection, chromosome, neuronsPerLayer));
 
+            // Create a population evolver for the genetic algorithm.
+            Random random = new Random();
+            PopulationEvolver<double> populationEvolver = 
+                new PopulationEvolver<double>(
+                    selector: new RouletteSelector<double>(random),
+                    modifier: new ChromosomeModifier<double>(random),
+                    validator: new GenericChromosomeValidator<double>(c => true));
+            
+            // Create a genetic algorithm.
+            GA<double> ga = new GA<double>(fitnessCalculator, populationEvolver);
+
+            int currentGeneration = 0;
+
+            // Output the best fitness every epoch.
+            ga.Epoch += (o, e) =>
+            {
+                Chromosome<double> bestChromosome = e.Data.OrderByDescending(c => c.Fitness).First();
+
+                Console.WriteLine(
+                    "Gen: {0}, Best: {1}, Avg: {2}, Correct: {3}, Time: {4}", 
+                    ++currentGeneration,
+                    Math.Round(e.Data.Max(c => c.Fitness), 5),
+                    Math.Round(e.Data.Average(c => c.Fitness), 5),
+                    GetTotalCorrect(trainingDataCollection, neuronsPerLayer, bestChromosome),
+                    DateTime.Now.ToString("hh:mm:ss.fff"));
+            };
+
             // Run the genetic algorithm.
             ChromosomeCollection<double> endingPopulation =
-                new GA<double>(fitnessCalculator)
-                    .Run(beginningPopulation, numberOfGenerations: 10);
+                ga.Run(beginningPopulation, numberOfGenerations: 1000, numberOfBestChromosomesToPromote: populationSize / 5);
 
             Console.WriteLine("here");
         }
@@ -93,14 +119,16 @@ namespace DigitNet
             int totalNeuronsInHiddenLayer,
             int totalNeuronsInOutputLayer)
         {
-            // Each node in each layer needs a weight for each node in the previous layer.
-            // The input layer has a single weight for each node.
-            int totalWeights = totalNeuronsInInputLayer +
+            // Each node in each layer other than the input layer needs 
+            // a weight for each node in the previous layer.
+            // The input layer does not require inputs.
+            int totalWeights = 
                 (totalNeuronsInHiddenLayer * totalNeuronsInInputLayer) +
                 (totalNeuronsInOutputLayer * totalNeuronsInHiddenLayer);
 
-            // Each node in each layer needs a single bias.
-            int totalBiases = totalNeuronsInInputLayer +
+            // Each node in each layer other than the input layer needs a single bias.
+            // The input layer does not require biases.
+            int totalBiases = 
                 totalNeuronsInHiddenLayer +
                 totalNeuronsInOutputLayer;
 
@@ -129,7 +157,7 @@ namespace DigitNet
 
                 for (int j = 0; j < totalInitializationDataPerNet; j++)
                 {
-                    initializationData.Add((random.NextDouble() * 2) - 1);
+                    initializationData.Add((random.NextDouble() * 10) - 5);
                 }
 
                 beginningPopulation.Add(new Chromosome<double>(initializationData));
@@ -150,32 +178,78 @@ namespace DigitNet
             Chromosome<double> chromosome,
             int[] neuronsPerLayer)
         {
+            return GetTotalCorrect(trainingDataCollection, neuronsPerLayer, chromosome);
+
+            ////NeuralNet neuralNet = new NeuralNet(
+            ////    neuronsPerLayer: neuronsPerLayer,
+            ////    weightsAndBiases: chromosome.Genes.ToArray());
+
+            ////double correctTotal = 0;
+            ////double incorrectTotal = 0;
+
+            ////foreach (TrainingData trainingData in trainingDataCollection)
+            ////{
+            ////    IList<double> dataAsDoubles = trainingData.Data.Select(b => (double)b / byte.MaxValue).ToList();
+            ////    IList<double> output = neuralNet.Think(dataAsDoubles).ToList();
+
+            ////    for (int i = 0; i < output.Count; i++)
+            ////    {
+            ////        if (i == trainingData.Digit)
+            ////        {
+            ////            correctTotal += output[i];
+            ////        }
+            ////        else
+            ////        {
+            ////            incorrectTotal += output[i];
+            ////        }
+            ////    }
+            ////}
+
+            ////return correctTotal / incorrectTotal;
+        }
+
+        /// <summary>
+        /// Gets the total digits classified correctly from the training set by the neural net initialized with the genes in the given chromosome.
+        /// </summary>
+        /// <param name="trainingDataCollection">The training data collection.</param>
+        /// <param name="neuronsPerLayer">The neurons per layer.</param>
+        /// <param name="chromosome">The chromosome.</param>
+        /// <returns>Returns the total digits classified correctly from the training set by the neural net initialized with the genes in the given chromosome.</returns>
+        private static int GetTotalCorrect(
+            IList<TrainingData> trainingDataCollection,
+            int[] neuronsPerLayer,
+            Chromosome<double> chromosome)
+        {
             NeuralNet neuralNet = new NeuralNet(
                 neuronsPerLayer: neuronsPerLayer,
                 weightsAndBiases: chromosome.Genes.ToArray());
 
-            double correctTotal = 0;
-            double incorrectTotal = 0;
+            int totalCorrect = 0;
 
-            foreach (TrainingData trainingData in trainingDataCollection.Take(500))
+            foreach (TrainingData trainingData in trainingDataCollection)
             {
                 IList<double> dataAsDoubles = trainingData.Data.Select(b => (double)b / byte.MaxValue).ToList();
                 IList<double> output = neuralNet.Think(dataAsDoubles).ToList();
 
+                double highestGuess = double.MinValue;
+                int guess = int.MinValue;
+
                 for (int i = 0; i < output.Count; i++)
                 {
-                    if (i == trainingData.Digit)
+                    if (output[i] > highestGuess)
                     {
-                        correctTotal += output[i];
+                        highestGuess = output[i];
+                        guess = i;
                     }
-                    else
-                    {
-                        incorrectTotal += output[i];
-                    }
+                }
+
+                if (guess == trainingData.Digit)
+                {
+                    totalCorrect++;
                 }
             }
 
-            return correctTotal / incorrectTotal;
+            return totalCorrect;
         }
 
         /// <summary>
@@ -188,12 +262,18 @@ namespace DigitNet
 
             bool skipLine = true;
 
+            int trainingDataSize = 500;
+
             foreach (string data in File.ReadAllLines("../../Files/train.csv"))
             {
                 if (skipLine)
                 {
                     skipLine = false;
                     continue;
+                }
+                else if (trainingDataSize-- == 0)
+                {
+                    break;
                 }
 
                 TrainingData trainingData = new TrainingData();
