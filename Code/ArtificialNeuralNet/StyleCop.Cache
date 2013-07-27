@@ -62,11 +62,22 @@
       </violation>
     </violations>
   </sourcecode>
+<<<<<<< HEAD
   <sourcecode name="Layer.cs" parser="StyleCop.CSharp.CsParser">
     <timestamps>
       <styleCop>2013/01/11 10:37:58.000</styleCop>
       <settingsFile>2013/05/25 17:25:49.896</settingsFile>
       <sourceFile>2013/07/20 15:13:34.577</sourceFile>
+=======
+  <project key="-685378782">
+    <configuration>TRACE</configuration>
+  </project>
+  <sourcecode name="NeuralNet.cs" parser="StyleCop.CSharp.CsParser">
+    <timestamps>
+      <styleCop>2013/01/11 10:37:58.000</styleCop>
+      <settingsFile>2013/05/25 17:25:49.896</settingsFile>
+      <sourceFile>2013/07/27 15:49:26.767</sourceFile>
+>>>>>>> master
       <parser>2013/01/11 10:37:58.000</parser>
       <StyleCop.CSharp.DocumentationRules>2013/01/11 10:37:58.000</StyleCop.CSharp.DocumentationRules>
       <StyleCop.CSharp.DocumentationRules.FilesHashCode>-193664310</StyleCop.CSharp.DocumentationRules.FilesHashCode>
@@ -85,11 +96,19 @@
     </timestamps>
     <violations />
   </sourcecode>
+<<<<<<< HEAD
   <sourcecode name="Neuron.cs" parser="StyleCop.CSharp.CsParser">
     <timestamps>
       <styleCop>2013/01/11 10:37:58.000</styleCop>
       <settingsFile>2013/05/25 17:25:49.896</settingsFile>
       <sourceFile>2013/07/20 16:03:44.981</sourceFile>
+=======
+  <sourcecode name="Layer.cs" parser="StyleCop.CSharp.CsParser">
+    <timestamps>
+      <styleCop>2013/01/11 10:37:58.000</styleCop>
+      <settingsFile>2013/05/25 17:25:49.896</settingsFile>
+      <sourceFile>2013/07/20 15:13:34.577</sourceFile>
+>>>>>>> master
       <parser>2013/01/11 10:37:58.000</parser>
       <StyleCop.CSharp.DocumentationRules>2013/01/11 10:37:58.000</StyleCop.CSharp.DocumentationRules>
       <StyleCop.CSharp.DocumentationRules.FilesHashCode>-193664310</StyleCop.CSharp.DocumentationRules.FilesHashCode>
@@ -108,11 +127,19 @@
     </timestamps>
     <violations />
   </sourcecode>
+<<<<<<< HEAD
   <sourcecode name="GlobalSuppressions.cs" parser="StyleCop.CSharp.CsParser">
     <timestamps>
       <styleCop>2013/01/11 10:37:58.000</styleCop>
       <settingsFile>2013/05/25 17:25:49.896</settingsFile>
       <sourceFile>2013/07/16 18:46:12.231</sourceFile>
+=======
+  <sourcecode name="Neuron.cs" parser="StyleCop.CSharp.CsParser">
+    <timestamps>
+      <styleCop>2013/01/11 10:37:58.000</styleCop>
+      <settingsFile>2013/05/25 17:25:49.896</settingsFile>
+      <sourceFile>2013/07/20 16:03:44.981</sourceFile>
+>>>>>>> master
       <parser>2013/01/11 10:37:58.000</parser>
       <StyleCop.CSharp.DocumentationRules>2013/01/11 10:37:58.000</StyleCop.CSharp.DocumentationRules>
       <StyleCop.CSharp.DocumentationRules.FilesHashCode>-193664310</StyleCop.CSharp.DocumentationRules.FilesHashCode>
@@ -131,11 +158,19 @@
     </timestamps>
     <violations />
   </sourcecode>
+<<<<<<< HEAD
   <sourcecode name="AssemblyInfo.cs" parser="StyleCop.CSharp.CsParser">
     <timestamps>
       <styleCop>2013/01/11 10:37:58.000</styleCop>
       <settingsFile>2013/05/25 17:25:49.896</settingsFile>
       <sourceFile>2013/07/16 18:47:27.781</sourceFile>
+=======
+  <sourcecode name="GlobalSuppressions.cs" parser="StyleCop.CSharp.CsParser">
+    <timestamps>
+      <styleCop>2013/01/11 10:37:58.000</styleCop>
+      <settingsFile>2013/05/25 17:25:49.896</settingsFile>
+      <sourceFile>2013/07/16 18:46:12.231</sourceFile>
+>>>>>>> master
       <parser>2013/01/11 10:37:58.000</parser>
       <StyleCop.CSharp.DocumentationRules>2013/01/11 10:37:58.000</StyleCop.CSharp.DocumentationRules>
       <StyleCop.CSharp.DocumentationRules.FilesHashCode>-193664310</StyleCop.CSharp.DocumentationRules.FilesHashCode>
@@ -154,11 +189,19 @@
     </timestamps>
     <violations />
   </sourcecode>
+<<<<<<< HEAD
   <sourcecode name="Synapse.cs" parser="StyleCop.CSharp.CsParser">
     <timestamps>
       <styleCop>2013/01/11 10:37:58.000</styleCop>
       <settingsFile>2013/05/25 17:25:49.896</settingsFile>
       <sourceFile>2013/07/20 15:50:43.490</sourceFile>
+=======
+  <sourcecode name="AssemblyInfo.cs" parser="StyleCop.CSharp.CsParser">
+    <timestamps>
+      <styleCop>2013/01/11 10:37:58.000</styleCop>
+      <settingsFile>2013/05/25 17:25:49.896</settingsFile>
+      <sourceFile>2013/07/16 18:47:27.781</sourceFile>
+>>>>>>> master
       <parser>2013/01/11 10:37:58.000</parser>
       <StyleCop.CSharp.DocumentationRules>2013/01/11 10:37:58.000</StyleCop.CSharp.DocumentationRules>
       <StyleCop.CSharp.DocumentationRules.FilesHashCode>-193664310</StyleCop.CSharp.DocumentationRules.FilesHashCode>
@@ -177,11 +220,19 @@
     </timestamps>
     <violations />
   </sourcecode>
+<<<<<<< HEAD
   <sourcecode name=".NETFramework,Version=v4.5.AssemblyAttributes.cs" parser="StyleCop.CSharp.CsParser">
     <timestamps>
       <styleCop>2013/01/11 10:37:58.000</styleCop>
       <settingsFile>2013/05/25 17:25:49.896</settingsFile>
       <sourceFile>2013/05/15 18:15:42.211</sourceFile>
+=======
+  <sourcecode name="Synapse.cs" parser="StyleCop.CSharp.CsParser">
+    <timestamps>
+      <styleCop>2013/01/11 10:37:58.000</styleCop>
+      <settingsFile>2013/05/25 17:25:49.896</settingsFile>
+      <sourceFile>2013/07/20 15:50:43.490</sourceFile>
+>>>>>>> master
       <parser>2013/01/11 10:37:58.000</parser>
       <StyleCop.CSharp.DocumentationRules>2013/01/11 10:37:58.000</StyleCop.CSharp.DocumentationRules>
       <StyleCop.CSharp.DocumentationRules.FilesHashCode>-193664310</StyleCop.CSharp.DocumentationRules.FilesHashCode>
@@ -200,11 +251,19 @@
     </timestamps>
     <violations />
   </sourcecode>
+<<<<<<< HEAD
   <sourcecode name="TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" parser="StyleCop.CSharp.CsParser">
     <timestamps>
       <styleCop>2013/01/11 10:37:58.000</styleCop>
       <settingsFile>2013/05/25 17:25:49.896</settingsFile>
       <sourceFile>2013/07/24 15:34:02.068</sourceFile>
+=======
+  <sourcecode name=".NETFramework,Version=v4.5.AssemblyAttributes.cs" parser="StyleCop.CSharp.CsParser">
+    <timestamps>
+      <styleCop>2013/01/11 10:37:58.000</styleCop>
+      <settingsFile>2013/05/25 17:25:49.896</settingsFile>
+      <sourceFile>2013/05/15 18:15:42.211</sourceFile>
+>>>>>>> master
       <parser>2013/01/11 10:37:58.000</parser>
       <StyleCop.CSharp.DocumentationRules>2013/01/11 10:37:58.000</StyleCop.CSharp.DocumentationRules>
       <StyleCop.CSharp.DocumentationRules.FilesHashCode>-193664310</StyleCop.CSharp.DocumentationRules.FilesHashCode>
@@ -223,7 +282,11 @@
     </timestamps>
     <violations />
   </sourcecode>
+<<<<<<< HEAD
   <sourcecode name="TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" parser="StyleCop.CSharp.CsParser">
+=======
+  <sourcecode name="TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" parser="StyleCop.CSharp.CsParser">
+>>>>>>> master
     <timestamps>
       <styleCop>2013/01/11 10:37:58.000</styleCop>
       <settingsFile>2013/05/25 17:25:49.896</settingsFile>
@@ -246,11 +309,19 @@
     </timestamps>
     <violations />
   </sourcecode>
+<<<<<<< HEAD
   <sourcecode name="TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" parser="StyleCop.CSharp.CsParser">
     <timestamps>
       <styleCop>2013/01/11 10:37:58.000</styleCop>
       <settingsFile>2013/05/25 17:25:49.896</settingsFile>
       <sourceFile>2013/07/24 15:34:02.069</sourceFile>
+=======
+  <sourcecode name="TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" parser="StyleCop.CSharp.CsParser">
+    <timestamps>
+      <styleCop>2013/01/11 10:37:58.000</styleCop>
+      <settingsFile>2013/05/25 17:25:49.896</settingsFile>
+      <sourceFile>2013/07/24 15:34:02.068</sourceFile>
+>>>>>>> master
       <parser>2013/01/11 10:37:58.000</parser>
       <StyleCop.CSharp.DocumentationRules>2013/01/11 10:37:58.000</StyleCop.CSharp.DocumentationRules>
       <StyleCop.CSharp.DocumentationRules.FilesHashCode>-193664310</StyleCop.CSharp.DocumentationRules.FilesHashCode>
@@ -269,6 +340,7 @@
     </timestamps>
     <violations />
   </sourcecode>
+<<<<<<< HEAD
   <project key="-685378782">
     <configuration>TRACE</configuration>
   </project>
@@ -277,6 +349,13 @@
       <styleCop>2013/01/11 10:37:58.000</styleCop>
       <settingsFile>2013/05/25 17:25:49.896</settingsFile>
       <sourceFile>2013/07/27 15:24:36.764</sourceFile>
+=======
+  <sourcecode name="TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" parser="StyleCop.CSharp.CsParser">
+    <timestamps>
+      <styleCop>2013/01/11 10:37:58.000</styleCop>
+      <settingsFile>2013/05/25 17:25:49.896</settingsFile>
+      <sourceFile>2013/07/24 15:34:02.069</sourceFile>
+>>>>>>> master
       <parser>2013/01/11 10:37:58.000</parser>
       <StyleCop.CSharp.DocumentationRules>2013/01/11 10:37:58.000</StyleCop.CSharp.DocumentationRules>
       <StyleCop.CSharp.DocumentationRules.FilesHashCode>-193664310</StyleCop.CSharp.DocumentationRules.FilesHashCode>
