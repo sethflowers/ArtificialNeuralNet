@@ -71,12 +71,6 @@ namespace ArtificialNeuralNet
                 }
             }
 
-            // Add an input to each neuron in the input layer.
-            foreach (Neuron neuron in this.Layers.First().Neurons)
-            {
-                neuron.Inputs.Add(new Synapse());
-            }
-
             // Add an output from each neuron in the output layer.
             foreach (Neuron neuron in this.Layers.Last().Neurons)
             {
@@ -89,11 +83,8 @@ namespace ArtificialNeuralNet
         /// </summary>
         /// <param name="neuronsPerLayer">The neurons per layer.</param>
         /// <param name="weightsAndBiases">The weights and biases to initialize the net with.</param>
-        /// <exception cref="System.ArgumentException">
-        /// Unable to initialize a neural net with empty or null initialization data.;weightsAndBiases
-        /// or
-        /// The total number of weights and biases to initialize the neural net is not the required amount of {0}.;weightsAndBiases
-        /// </exception>
+        /// <exception cref="System.ArgumentNullException">weightsAndBiases;Unable to initialize a neural net with null initialization data.</exception>
+        /// <exception cref="System.ArgumentException">weightsAndBiases</exception>
         public NeuralNet(int[] neuronsPerLayer, double[] weightsAndBiases)
             : this(neuronsPerLayer)
         {
@@ -102,9 +93,14 @@ namespace ArtificialNeuralNet
                 throw new ArgumentNullException("weightsAndBiases", "Unable to initialize a neural net with null initialization data.");
             }
 
-            // The first layer has a single input and bias for each node.
-            int requiredInitializationCount = neuronsPerLayer[0] * 2;
+            // Determine how much initialization data we need by summing up all the inputs and biases
+            // for all layers but the first input layer.
+            int requiredInitializationCount = 0;
 
+            // We do not initialize the bias for each node in the input layer, 
+            // nor does the input layer have inputs.
+            // We only need enough inputs for all the biases and inputs for every layer
+            // other than the input layer.
             for (int i = 1; i < neuronsPerLayer.Length; i++)
             {
                 // A bias is required for each neuron in the layer.
@@ -123,7 +119,9 @@ namespace ArtificialNeuralNet
 
             int currentIndex = 0;
 
-            foreach (Layer layer in this.Layers)
+            // Initialize all the weights and biases for every 
+            // input to every node in every layer but the first layer.
+            foreach (Layer layer in this.Layers.Skip(1))
             {
                 foreach (Neuron neuron in layer.Neurons)
                 {
@@ -158,12 +156,17 @@ namespace ArtificialNeuralNet
                 throw new ArgumentException("The number of inputs to a neural net should match the number of neurons in the input layer.", "inputs");
             }
 
+            // Set the outputs of the input layer to be the inputs.
             for (int i = 0; i < inputs.Count; i++)
             {
-                this.Layers[0].Neurons[i].Inputs[0].Value = inputs[i];
+                foreach (Synapse output in this.Layers[0].Neurons[i].Outputs)
+                {
+                    output.Value = inputs[i];
+                }
             }
 
-            foreach (Layer layer in this.Layers)
+            // Let every layer after the input layer process the outputs from the previous layer.
+            foreach (Layer layer in this.Layers.Skip(1))
             {
                 layer.Think();
             }

@@ -126,11 +126,11 @@ namespace ArtificialNeuralNet.Tests
             }
             catch (ArgumentException exception)
             {
-                // There should be 2 for the first layer.
+                // There should be 0 for the first layer.
                 // There should be 6 for the second layer.
                 // There should be 4 for the third layer.
                 Assert.AreEqual(
-                    string.Format("The total number of weights and biases to initialize the neural net is not the required amount of 12.{0}Parameter name: weightsAndBiases", Environment.NewLine),
+                    string.Format("The total number of weights and biases to initialize the neural net is not the required amount of 10.{0}Parameter name: weightsAndBiases", Environment.NewLine),
                     exception.Message);
 
                 throw;
@@ -163,17 +163,19 @@ namespace ArtificialNeuralNet.Tests
         }
 
         /// <summary>
-        /// Validates that the first layer has an input synapse for each neuron.
+        /// Validates that the first layer has no input synapses for each neuron.
+        /// This is because the neurons in the input layer are just there to provide the input to the hidden layers.
+        /// Input nodes do not run their inputs through an activation function,
+        /// they just forward the input to their output. 
         /// </summary>
         [TestMethod]
-        public void Constructor_EachNeuronInInputLayerHasSingleInput()
+        public void Constructor_EachNeuronInInputLayerHasNoInputs()
         {
             NeuralNet net = new NeuralNet(neuronsPerLayer: new[] { 3, 2, 4 });
 
             foreach (Neuron neuron in net.Layers.First().Neurons)
             {
-                Assert.AreEqual(1, neuron.Inputs.Count);
-                Assert.IsNotNull(neuron.Inputs[0]);
+                Assert.AreEqual(0, neuron.Inputs.Count);
             }
         }
 
@@ -207,10 +209,10 @@ namespace ArtificialNeuralNet.Tests
             IList<Neuron> hiddenLayerNeurons = net.Layers[1].Neurons;
             IList<Neuron> outputLayerNeurons = net.Layers[2].Neurons;
 
-            // Each neuron in the input layer should have one input, and three outputs.
-            Assert.AreEqual(1, inputLayerNeurons[0].Inputs.Count);
+            // Each neuron in the input layer should have 0 inputs, and three outputs.
+            Assert.AreEqual(0, inputLayerNeurons[0].Inputs.Count);
             Assert.AreEqual(3, inputLayerNeurons[0].Outputs.Count);
-            Assert.AreEqual(1, inputLayerNeurons[1].Inputs.Count);
+            Assert.AreEqual(0, inputLayerNeurons[1].Inputs.Count);
             Assert.AreEqual(3, inputLayerNeurons[1].Outputs.Count);
 
             // Each neuron in the hidden layer should have two inputs, and two outputs.
@@ -252,21 +254,21 @@ namespace ArtificialNeuralNet.Tests
         [TestMethod]
         public void Constructor_InitializationData_UsedCorrectlyForBiasesAndWeights()
         {
+            // Create the initialization data for the biases and input weights 
+            // for every node in every layer but the input layer.
             double[] initializationData = new[] 
             {
-                0.1, 0.2, // the first nodes bias and weight
-                0.3, 0.4, // the second nodes bias and weight
-                0.5, 0.6, // the third nodes bias and weight
-                0.7, 0.8, 0.9 // the fourth nodes bias and two weights
+                0.3, 0.4, // The bias and weight for the first node in the hidden layer.
+                0.5, 0.6, // The bias and weight for the second node in the hidden layer.
+                0.7, 0.8, 0.9 // The bias and weight for the single node in the output layer.
             }; 
 
             NeuralNet neuralNet = new NeuralNet(
                 neuronsPerLayer: new[] { 1, 2, 1 },
                 weightsAndBiases: initializationData);
 
-            // Validate the single node in the input layer is initialized correctly.
-            Assert.AreEqual(0.1, neuralNet.Layers[0].Neurons[0].Bias, "Layer 1 Node 1 bias");
-            Assert.AreEqual(0.2, neuralNet.Layers[0].Neurons[0].Inputs[0].Weight, "Layer 1 Node 1 Input 1 weight");
+            // Validate the single node in the input has no inputs.
+            Assert.AreEqual(0, neuralNet.Layers[0].Neurons[0].Inputs.Count, "Layer 1 Node 1 Input 1");
 
             // Validate the first node in the hidden layer is initialized correctly.
             Assert.AreEqual(0.3, neuralNet.Layers[1].Neurons[0].Bias, "Layer 2 Node 1 bias");
@@ -334,22 +336,24 @@ namespace ArtificialNeuralNet.Tests
         [TestMethod]
         public void Think_ReturnsTheCorrectOutput()
         {
+            // Create the initialization data.
+            // This data represents the biases and weights for every input synapse 
+            // for every node in every layer but the first.
+            // This means we need one bias and one weight for the only node in the second layer.
+            double[] initializationData = new[] { 0.5, 0.25 };
+
             // Setup a net with two layers of one neuron each.
-            NeuralNet net = new NeuralNet(new[] { 1, 1 });
-
-            // Reset the biases in all nodes so we can disregard them in the calculations.
-            net.Layers[0].Neurons[0].Bias = net.Layers[1].Neurons[0].Bias = 0;
-
-            // Set the input weights for all nodes, so we can verify the calculations
-            net.Layers[0].Neurons[0].Inputs[0].Weight = 0.5;
-            net.Layers[1].Neurons[0].Inputs[0].Weight = 0.25;
+            NeuralNet net = new NeuralNet(new[] { 1, 1 }, initializationData);
 
             // Execute the code to test.
             IEnumerable<double> output = net.Think(inputs: new[] { 0.3 });
 
-            // If the input is 0.3, and no nodes have biases,
-            double expectedOutputOfFirstNode = 1 / (1 + Math.Pow(Math.E, -(0.5 * 0.3)));
-            double expectedOutputOfNet = 1 / (1 + Math.Pow(Math.E, -(0.25 * expectedOutputOfFirstNode)));
+            // If the input is 0.3, then the output of the single node in the input layer is 0.3.
+            // The weight of this synapse to the output layer is 0.25, and the bias is 0.5.
+            // The sum of the inputs to the output node is 0.25 * 0.3 is .075.
+            // Add this number to the bias to get .575.
+            // Run this number through the sigmoid activation function.
+            double expectedOutputOfNet = 1 / (1 + Math.Pow(Math.E, -0.575));
 
             // Validate that we got the correct output.
             Assert.IsNotNull(output);
