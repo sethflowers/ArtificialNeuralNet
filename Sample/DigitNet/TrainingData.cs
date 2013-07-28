@@ -30,6 +30,6 @@ namespace DigitNet
         /// <value>
         /// The image data for a single digit.
         /// </value>
-        public byte[] Data { get; set; }
+        public double[] Data { get; set; }
     }
 }

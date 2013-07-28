@@ -102,7 +102,7 @@ namespace DigitNet
 
             // Run the genetic algorithm.
             ChromosomeCollection<double> endingPopulation =
-                ga.Run(beginningPopulation, numberOfGenerations: 1000, numberOfBestChromosomesToPromote: populationSize / 5);
+                ga.Run(beginningPopulation, numberOfGenerations: 1, numberOfBestChromosomesToPromote: populationSize / 5);
 
             Console.WriteLine("here");
         }
@@ -189,8 +189,7 @@ namespace DigitNet
 
             ////foreach (TrainingData trainingData in trainingDataCollection)
             ////{
-            ////    IList<double> dataAsDoubles = trainingData.Data.Select(b => (double)b / byte.MaxValue).ToList();
-            ////    IList<double> output = neuralNet.Think(dataAsDoubles).ToList();
+            ////    IList<double> output = neuralNet.Think(trainingData.Data.ToList()).ToList();
 
             ////    for (int i = 0; i < output.Count; i++)
             ////    {
@@ -228,8 +227,7 @@ namespace DigitNet
 
             foreach (TrainingData trainingData in trainingDataCollection)
             {
-                IList<double> dataAsDoubles = trainingData.Data.Select(b => (double)b / byte.MaxValue).ToList();
-                IList<double> output = neuralNet.Think(dataAsDoubles).ToList();
+                IList<double> output = neuralNet.Think(trainingData.Data.ToList()).ToList();
 
                 double highestGuess = double.MinValue;
                 int guess = int.MinValue;
@@ -264,7 +262,7 @@ namespace DigitNet
 
             int trainingDataSize = 500;
 
-            foreach (string data in File.ReadAllLines("../../Files/train.csv"))
+            foreach (string data in File.ReadLines("../../Files/train.csv"))
             {
                 if (skipLine)
                 {
@@ -280,7 +278,7 @@ namespace DigitNet
                 trainingData.Digit = (short)(data[0] - (int)'0');
 
                 string[] lineData = data.Split(",".ToCharArray());
-                trainingData.Data = lineData.Skip(1).Select(s => byte.Parse(s)).ToArray();
+                trainingData.Data = lineData.Skip(1).Select(s => double.Parse(s) / byte.MaxValue).ToArray();
 
                 trainingDataCollection.Add(trainingData);
             }
