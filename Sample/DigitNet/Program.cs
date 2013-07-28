@@ -48,7 +48,7 @@ namespace DigitNet
             // The input layer needs a neuron for each pixel in a 28x28 image.
             // The output layer needs a neuron for each number from 0 to 9.
             int totalNeuronsInInputLayer = 28 * 28;
-            int totalNeuronsInHiddenLayer = 50;
+            int totalNeuronsInHiddenLayer = 500;
             int totalNeuronsInOutputLayer = 10;
 
             // Determine the total amount of data required for a single net with the given node counts.
@@ -92,17 +92,16 @@ namespace DigitNet
                 Chromosome<double> bestChromosome = e.Data.OrderByDescending(c => c.Fitness).First();
 
                 Console.WriteLine(
-                    "Gen: {0}, Best: {1}, Avg: {2}, Correct: {3}, Time: {4}", 
+                    "Gen: {0}, Best: {1}, Avg: {2}, Time: {3}", 
                     ++currentGeneration,
                     Math.Round(e.Data.Max(c => c.Fitness), 5),
                     Math.Round(e.Data.Average(c => c.Fitness), 5),
-                    GetTotalCorrect(trainingDataCollection, neuronsPerLayer, bestChromosome),
                     DateTime.Now.ToString("hh:mm:ss.fff"));
             };
 
             // Run the genetic algorithm.
             ChromosomeCollection<double> endingPopulation =
-                ga.Run(beginningPopulation, numberOfGenerations: 1, numberOfBestChromosomesToPromote: populationSize / 5);
+                ga.Run(beginningPopulation, numberOfGenerations: 1000, numberOfBestChromosomesToPromote: populationSize / 5);
 
             Console.WriteLine("here");
         }
@@ -178,33 +177,40 @@ namespace DigitNet
             Chromosome<double> chromosome,
             int[] neuronsPerLayer)
         {
-            return GetTotalCorrect(trainingDataCollection, neuronsPerLayer, chromosome);
+            int totalCorrect = 0;
 
-            ////NeuralNet neuralNet = new NeuralNet(
-            ////    neuronsPerLayer: neuronsPerLayer,
-            ////    weightsAndBiases: chromosome.Genes.ToArray());
+            int[] neuronsPerLayerAfterInputLayer = neuronsPerLayer.Skip(1).ToArray();
+            int numberOfBiases = neuronsPerLayerAfterInputLayer.Sum();
+            double[] biases = chromosome.Genes.Take(numberOfBiases).ToArray();
+            double[] weights = chromosome.Genes.Skip(numberOfBiases).ToArray();
 
-            ////double correctTotal = 0;
-            ////double incorrectTotal = 0;
+            foreach (TrainingData trainingData in trainingDataCollection)
+            {
+                double[] output = NeuralNet.ThinkFast(
+                    inputs: trainingData.Data,
+                    neuronsPerLayerAfterInputLayer: neuronsPerLayerAfterInputLayer,
+                    biases: biases,
+                    weights: weights);
 
-            ////foreach (TrainingData trainingData in trainingDataCollection)
-            ////{
-            ////    IList<double> output = neuralNet.Think(trainingData.Data.ToList()).ToList();
+                double highestGuess = double.MinValue;
+                int guess = int.MinValue;
 
-            ////    for (int i = 0; i < output.Count; i++)
-            ////    {
-            ////        if (i == trainingData.Digit)
-            ////        {
-            ////            correctTotal += output[i];
-            ////        }
-            ////        else
-            ////        {
-            ////            incorrectTotal += output[i];
-            ////        }
-            ////    }
-            ////}
+                for (int i = 0; i < output.Length; i++)
+                {
+                    if (output[i] > highestGuess)
+                    {
+                        highestGuess = output[i];
+                        guess = i;
+                    }
+                }
 
-            ////return correctTotal / incorrectTotal;
+                if (guess == trainingData.Digit)
+                {
+                    totalCorrect++;
+                }
+            }
+
+            return Math.Round(((double)totalCorrect / trainingDataCollection.Count) * 100, 5);
         }
 
         /// <summary>
@@ -219,20 +225,25 @@ namespace DigitNet
             int[] neuronsPerLayer,
             Chromosome<double> chromosome)
         {
-            NeuralNet neuralNet = new NeuralNet(
-                neuronsPerLayer: neuronsPerLayer,
-                weightsAndBiases: chromosome.Genes.ToArray());
-
             int totalCorrect = 0;
+
+            int[] neuronsPerLayerAfterInputLayer = neuronsPerLayer.Skip(1).ToArray();
+            int numberOfBiases = neuronsPerLayerAfterInputLayer.Sum();
+            double[] biases = chromosome.Genes.Take(numberOfBiases).ToArray();
+            double[] weights = chromosome.Genes.Skip(numberOfBiases).ToArray();
 
             foreach (TrainingData trainingData in trainingDataCollection)
             {
-                IList<double> output = neuralNet.Think(trainingData.Data.ToList()).ToList();
+                double[] output = NeuralNet.ThinkFast(
+                    inputs: trainingData.Data,
+                    neuronsPerLayerAfterInputLayer: neuronsPerLayerAfterInputLayer,
+                    biases: biases,
+                    weights: weights);
 
                 double highestGuess = double.MinValue;
                 int guess = int.MinValue;
 
-                for (int i = 0; i < output.Count; i++)
+                for (int i = 0; i < output.Length; i++)
                 {
                     if (output[i] > highestGuess)
                     {
@@ -248,6 +259,36 @@ namespace DigitNet
             }
 
             return totalCorrect;
+
+            ////NeuralNet neuralNet = new NeuralNet(
+            ////    neuronsPerLayer: neuronsPerLayer,
+            ////    weightsAndBiases: chromosome.Genes.ToArray());
+
+            ////int totalCorrect = 0;
+
+            ////foreach (TrainingData trainingData in trainingDataCollection)
+            ////{
+            ////    IList<double> output = neuralNet.Think(trainingData.Data.ToList()).ToList();
+
+            ////    double highestGuess = double.MinValue;
+            ////    int guess = int.MinValue;
+
+            ////    for (int i = 0; i < output.Count; i++)
+            ////    {
+            ////        if (output[i] > highestGuess)
+            ////        {
+            ////            highestGuess = output[i];
+            ////            guess = i;
+            ////        }
+            ////    }
+
+            ////    if (guess == trainingData.Digit)
+            ////    {
+            ////        totalCorrect++;
+            ////    }
+            ////}
+
+            ////return totalCorrect;
         }
 
         /// <summary>
