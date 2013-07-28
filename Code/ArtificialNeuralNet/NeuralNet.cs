@@ -12,8 +12,8 @@ namespace ArtificialNeuralNet
     using System.Linq;
 
     /// <summary>
-    /// <para>Represents an artificial neural net,</para>
-    /// <para>containing layers of neurons, connected to other layers of neurons.</para>
+    ///   <para>Represents an artificial neural net,</para>
+    ///   <para>containing layers of neurons, connected to other layers of neurons.</para>
     /// </summary>
     public class NeuralNet
     {
@@ -144,6 +144,57 @@ namespace ArtificialNeuralNet
         public Collection<Layer> Layers { get; private set; }
 
         /// <summary>
+        /// Runs a fast neural network.
+        /// </summary>
+        /// <param name="inputs">The inputs to the neural network.</param>
+        /// <param name="neuronsPerLayerAfterInputLayer">The neurons per layer after the input layer.</param>
+        /// <param name="biases">The biases for each node in each layer after the input layer.</param>
+        /// <param name="weights">The weights for each input to each node in each layer after the input layer.</param>
+        /// <returns>Returns the outputs of the neural net.</returns>
+        public static double[] ThinkFast(
+            double[] inputs,
+            int[] neuronsPerLayerAfterInputLayer,
+            double[] biases,
+            double[] weights)
+        {
+            ValidateInputs(inputs);
+            ValidateNeuronsPerLayer(neuronsPerLayerAfterInputLayer);
+            ValidateBiases(neuronsPerLayerAfterInputLayer, biases);
+            ValidateWeights(inputs, neuronsPerLayerAfterInputLayer, weights);
+
+            double[] inputsToNextLayer = inputs;
+            int biasIndex = 0;
+            int weightIndex = 0;
+
+            for (int layerIndex = 0; layerIndex < neuronsPerLayerAfterInputLayer.Length; layerIndex++)
+            {
+                int neuronsInLayer = neuronsPerLayerAfterInputLayer[layerIndex];
+                double[] outputsFromLayer = new double[neuronsInLayer];
+                int currentOutputIndex = 0;
+
+                for (int neuronIndex = 0; neuronIndex < neuronsInLayer; neuronIndex++)
+                {
+                    double sumForOutputFromNeuron = biases[biasIndex++];
+
+                    for (int inputIndex = 0; inputIndex < inputsToNextLayer.Length; inputIndex++)
+                    {
+                        double input = inputsToNextLayer[inputIndex];
+                        double weight = weights[weightIndex++];
+
+                        sumForOutputFromNeuron += input * weight;
+                    }
+
+                    outputsFromLayer[currentOutputIndex++] =
+                        1 / (1 + Math.Pow(Math.E, -sumForOutputFromNeuron));
+                }
+
+                inputsToNextLayer = outputsFromLayer;
+            }
+
+            return inputsToNextLayer;
+        }
+
+        /// <summary>
         /// Runs the given input through this net, producing an output.
         /// </summary>
         /// <param name="inputs">The inputs.</param>
@@ -175,6 +226,109 @@ namespace ArtificialNeuralNet
                 from neuron in this.Layers.Last().Neurons
                 from output in neuron.Outputs
                 select output.Value;
+        }
+
+        /// <summary>
+        /// Validates that the inputs to a neural net are not empty.
+        /// </summary>
+        /// <param name="inputs">The inputs.</param>
+        /// <exception cref="System.ArgumentException">Unable to run a neural net without any inputs.;inputs</exception>
+        private static void ValidateInputs(double[] inputs)
+        {
+            if (inputs == null || inputs.Length == 0)
+            {
+                throw new ArgumentException(
+                    "Unable to run a neural net without any inputs.",
+                    "inputs");
+            }
+        }
+
+        /// <summary>
+        /// Validates that the neurons per layer is not null and has valid values..
+        /// </summary>
+        /// <param name="neuronsPerLayerAfterInputLayer">The neurons per layer after input layer.</param>
+        /// <exception cref="System.ArgumentException">
+        /// Unable to run a neural net without knowing how many neurons to create in each layer after the input layer.;neuronsPerLayerAfterInputLayer
+        /// or
+        /// Unable to create a neural net with a layer with a non-positive number of neurons.;neuronsPerLayerAfterInputLayer
+        /// </exception>
+        private static void ValidateNeuronsPerLayer(int[] neuronsPerLayerAfterInputLayer)
+        {
+            if (neuronsPerLayerAfterInputLayer == null || neuronsPerLayerAfterInputLayer.Length == 0)
+            {
+                throw new ArgumentException(
+                    "Unable to run a neural net without knowing how many neurons to create in each layer after the input layer.",
+                    "neuronsPerLayerAfterInputLayer");
+            }
+            else if (neuronsPerLayerAfterInputLayer.Any(i => i < 1))
+            {
+                throw new ArgumentException(
+                    "Unable to create a neural net with a layer with a non-positive number of neurons.", 
+                    "neuronsPerLayerAfterInputLayer");
+            }
+        }
+
+        /// <summary>
+        /// Validates that the biases are not null and there is a bias for each
+        /// node in the neural net, other than the nodes in the input layer.
+        /// </summary>
+        /// <param name="neuronsPerLayerAfterInputLayer">The neurons per layer after the input layer.</param>
+        /// <param name="biases">The biases.</param>
+        /// <exception cref="System.ArgumentNullException">biases;Unable to run a neural net without any biases.</exception>
+        /// <exception cref="System.ArgumentException">The total number of biases should be {0}, but was {1}.;biases</exception>
+        private static void ValidateBiases(int[] neuronsPerLayerAfterInputLayer, double[] biases)
+        {
+            if (biases == null)
+            {
+                throw new ArgumentNullException("biases", "Unable to run a neural net without any biases.");
+            }
+
+            int expectedBiases = neuronsPerLayerAfterInputLayer.Sum();
+
+            if (biases.Length != expectedBiases)
+            {
+                throw new ArgumentException(
+                    string.Format(CultureInfo.CurrentCulture, "The total number of biases should be {0}, but was {1}.", expectedBiases, biases.Length),
+                    "biases");
+            }
+        }
+
+        /// <summary>
+        /// Validates that the weights are not null and there is a weight for 
+        /// each input to each node in each layer after the input layer.
+        /// </summary>
+        /// <param name="inputs">The inputs.</param>
+        /// <param name="neuronsPerLayerAfterInputLayer">The neurons per layer after the input layer.</param>
+        /// <param name="weights">The weights.</param>
+        /// <exception cref="System.ArgumentNullException">weights;Unable to run a neural net without any weights.</exception>
+        /// <exception cref="System.ArgumentException">The total number of weights should be {0}, but was {1}.;weights</exception>
+        private static void ValidateWeights(double[] inputs, int[] neuronsPerLayerAfterInputLayer, double[] weights)
+        {
+            if (weights == null)
+            {
+                throw new ArgumentNullException("weights", "Unable to run a neural net without any weights.");
+            }
+
+            int expectedWeights = 0;
+
+            for (int i = 0; i < neuronsPerLayerAfterInputLayer.Length; i++)
+            {
+                if (i == 0)
+                {
+                    expectedWeights += neuronsPerLayerAfterInputLayer[i] * inputs.Length;
+                }
+                else
+                {
+                    expectedWeights += neuronsPerLayerAfterInputLayer[i] * neuronsPerLayerAfterInputLayer[i - 1];
+                }
+            }
+
+            if (weights.Length != expectedWeights)
+            {
+                throw new ArgumentException(
+                    string.Format(CultureInfo.CurrentCulture, "The total number of weights should be {0}, but was {1}.", expectedWeights, weights.Length),
+                    "weights");
+            }
         }
     }
 }

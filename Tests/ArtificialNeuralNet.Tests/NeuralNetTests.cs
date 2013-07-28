@@ -261,7 +261,7 @@ namespace ArtificialNeuralNet.Tests
                 0.3, 0.4, // The bias and weight for the first node in the hidden layer.
                 0.5, 0.6, // The bias and weight for the second node in the hidden layer.
                 0.7, 0.8, 0.9 // The bias and weight for the single node in the output layer.
-            }; 
+            };
 
             NeuralNet neuralNet = new NeuralNet(
                 neuronsPerLayer: new[] { 1, 2, 1 },
@@ -359,6 +359,312 @@ namespace ArtificialNeuralNet.Tests
             Assert.IsNotNull(output);
             Assert.AreEqual(1, output.Count());
             Assert.AreEqual(expectedOutputOfNet, output.First());
+        }
+
+        /// <summary>
+        /// Validates that ThinkFast throws a meaningful exception if the inputs argument is null.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ThinkFast_InputsIsNull_ThrowsMeaningfulException()
+        {
+            try
+            {
+                NeuralNet.ThinkFast(
+                    inputs: null,
+                    neuronsPerLayerAfterInputLayer: new[] { 1 },
+                    biases: new[] { 0.1 },
+                    weights: new[] { 0.2 });
+            }
+            catch (ArgumentException exception)
+            {
+                Assert.AreEqual(
+                    string.Format("Unable to run a neural net without any inputs.{0}Parameter name: inputs", Environment.NewLine),
+                    exception.Message);
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Validates that ThinkFast throws a meaningful exception if the inputs argument is empty.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ThinkFast_InputsIsEmpy_ThrowsMeaningfulException()
+        {
+            try
+            {
+                NeuralNet.ThinkFast(
+                    inputs: new double[0],
+                    neuronsPerLayerAfterInputLayer: new[] { 1 },
+                    biases: new[] { 0.1 },
+                    weights: new[] { 0.2 });
+            }
+            catch (ArgumentException exception)
+            {
+                Assert.AreEqual(
+                    string.Format("Unable to run a neural net without any inputs.{0}Parameter name: inputs", Environment.NewLine),
+                    exception.Message);
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Validates that ThinkFast throws a meaningful exception if the neurons per layer after the input layer argument is null.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ThinkFast_NeuronsPerLayerAfterInputLayerIsNull_ThrowsMeaningfulException()
+        {
+            try
+            {
+                NeuralNet.ThinkFast(
+                    inputs: new[] { 0.5 },
+                    neuronsPerLayerAfterInputLayer: null,
+                    biases: new[] { 0.1 },
+                    weights: new[] { 0.2 });
+            }
+            catch (ArgumentException exception)
+            {
+                Assert.AreEqual(
+                    string.Format("Unable to run a neural net without knowing how many neurons to create in each layer after the input layer.{0}Parameter name: neuronsPerLayerAfterInputLayer", Environment.NewLine),
+                    exception.Message);
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Validates that ThinkFast throws a meaningful exception if the neurons per layer after the input layer argument is empty.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ThinkFast_NeuronsPerLayerAfterInputLayerIsEmpty_ThrowsMeaningfulException()
+        {
+            try
+            {
+                NeuralNet.ThinkFast(
+                    inputs: new[] { 0.5 },
+                    neuronsPerLayerAfterInputLayer: new int[0],
+                    biases: new[] { 0.1 },
+                    weights: new[] { 0.2 });
+            }
+            catch (ArgumentException exception)
+            {
+                Assert.AreEqual(
+                    string.Format("Unable to run a neural net without knowing how many neurons to create in each layer after the input layer.{0}Parameter name: neuronsPerLayerAfterInputLayer", Environment.NewLine),
+                    exception.Message);
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Validates that ThinkFast throws a meaningful exception if the 
+        /// neurons per layer after the input layer argument has non-positive values in it.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ThinkFast_NeuronsPerLayerAfterInputLayerHasNonPositiveValues_ThrowsMeaningfulException()
+        {
+            try
+            {
+                NeuralNet.ThinkFast(
+                    inputs: new[] { 0.5 },
+                    neuronsPerLayerAfterInputLayer: new[] { -4 },
+                    biases: new[] { 0.1 },
+                    weights: new[] { 0.2 });
+            }
+            catch (ArgumentException exception)
+            {
+                Assert.AreEqual(
+                    string.Format("Unable to create a neural net with a layer with a non-positive number of neurons.{0}Parameter name: neuronsPerLayerAfterInputLayer", Environment.NewLine),
+                    exception.Message);
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Validates that ThinkFast throws a meaningful exception if the biases argument is null.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ThinkFast_BiasesIsNull_ThrowsMeaningfulException()
+        {
+            try
+            {
+                NeuralNet.ThinkFast(
+                    inputs: new[] { 0.5 },
+                    neuronsPerLayerAfterInputLayer: new[] { 1 },
+                    biases: null,
+                    weights: new[] { 0.2 });
+            }
+            catch (ArgumentNullException exception)
+            {
+                Assert.AreEqual(
+                    string.Format("Unable to run a neural net without any biases.{0}Parameter name: biases", Environment.NewLine),
+                    exception.Message);
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Validates that ThinkFast throws a meaningful exception if the biases argument is not the correct length.
+        /// There should be as many biases in the array as there are neurons in all the layers after the input layer.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ThinkFast_BiasesIsNotCorrectLength_ThrowsMeaningfulException()
+        {
+            try
+            {
+                NeuralNet.ThinkFast(
+                    inputs: new[] { 0.5 },
+                    neuronsPerLayerAfterInputLayer: new[] { 1 },
+                    biases: new[] { 0.1, 0.3 },
+                    weights: new[] { 0.2 });
+            }
+            catch (ArgumentException exception)
+            {
+                Assert.AreEqual(
+                    string.Format("The total number of biases should be 1, but was 2.{0}Parameter name: biases", Environment.NewLine),
+                    exception.Message);
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Validates that ThinkFast throws a meaningful exception if the weights argument is null.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ThinkFast_WeightsIsNull_ThrowsMeaningfulException()
+        {
+            try
+            {
+                NeuralNet.ThinkFast(
+                    inputs: new[] { 0.5 },
+                    neuronsPerLayerAfterInputLayer: new[] { 1 },
+                    biases: new[] { 0.1 },
+                    weights: null);
+            }
+            catch (ArgumentNullException exception)
+            {
+                Assert.AreEqual(
+                    string.Format("Unable to run a neural net without any weights.{0}Parameter name: weights", Environment.NewLine),
+                    exception.Message);
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Validates that ThinkFast throws a meaningful exception if the biases argument is not the correct length.
+        /// There should be as many weights in the array as there sum of all the nodes in each layer times all the nodes in the previous layer.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ThinkFast_WeightsIsNotCorrectLength_ThrowsMeaningfulException()
+        {
+            try
+            {
+                NeuralNet.ThinkFast(
+                    inputs: new[] { 0.5 },
+                    neuronsPerLayerAfterInputLayer: new[] { 1 },
+                    biases: new[] { 0.1 },
+                    weights: new[] { 0.2, 0.4, .03 });
+            }
+            catch (ArgumentException exception)
+            {
+                Assert.AreEqual(
+                    string.Format("The total number of weights should be 1, but was 3.{0}Parameter name: weights", Environment.NewLine),
+                    exception.Message);
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Validates that the ThinkFast method returns the correct outputs for a simple neural network
+        /// consisting of a single input and a single output, with no hidden nodes.
+        /// </summary>
+        [TestMethod]
+        public void ThinkFast_SingleInputNoHiddenNodesSingleOutput_ReturnsCorrectOutputs()
+        {
+            // Execute the code to test.
+            double[] output = NeuralNet.ThinkFast(
+                inputs: new[] { 0.3 },
+                neuronsPerLayerAfterInputLayer: new[] { 1 },
+                biases: new[] { 0.5 },
+                weights: new[] { 0.25 });
+
+            // If the input is 0.3, then the output of the single node in the input layer is 0.3.
+            // The weight of this synapse to the output layer is 0.25, and the bias is 0.5.
+            // The sum of the inputs to the output node is 0.25 * 0.3 is .075.
+            // Add this number to the bias to get .575.
+            // Run this number through the sigmoid activation function.
+            double expectedOutputOfNet = 1 / (1 + Math.Pow(Math.E, -0.575));
+
+            // Validate that we got the correct output.
+            Assert.IsNotNull(output);
+            Assert.AreEqual(1, output.Length);
+            Assert.AreEqual(expectedOutputOfNet, output[0]);
+        }
+
+        /// <summary>
+        /// Validates that the ThinkFast method returns the correct outputs for another simple neural network
+        /// consisting of two inputs, two hidden nodes in a hidden layer, and two outputs.
+        /// </summary>
+        [TestMethod]
+        public void ThinkFast_TwoInputsTwoHiddenNodesTwoOutputs_ReturnsCorrectOutputs()
+        {
+            // Initialize the inputs for our tests.
+            double[] inputs = new[] { 1.0, 2.0 };
+
+            // Initialize the biases for our tests.
+            double[] biases = new[] 
+            {
+                0.9, // This is the bias for the first node in the hidden layer. 
+                0.8, // This is the bias for the second node in the hidden layer.
+                0.7, // This is the bias for the second node in the output layer.
+                0.6  // This is the bias for the second node in the output layer.
+            };
+
+            // Initialize the weights for our tests.
+            double[] weights = new[] 
+            { 
+                0.02, 0.04, // This is the first and second weights for the inputs to the first node in the hidden layer. 
+                0.06, 0.08, // This is the first and second weights for the inputs to the second node in the hidden layer.
+                0.01, 0.03, // This is the first and second weights for the inputs to the first node in the output layer.
+                0.05, 0.01  // This is the first and second weights for the inputs to the second node in the output layer.
+            };
+
+            // Execute the code to test.
+            double[] output = NeuralNet.ThinkFast(
+                inputs: inputs,
+                neuronsPerLayerAfterInputLayer: new[] { 2, 2 },
+                biases: biases,
+                weights: weights);
+
+            Func<double, double, double, double, double, double> activationFunction = 
+                (firstInputWeight, firstInput, secondInputWeight, secondInput, bias) =>
+                    1 / (1 + Math.Pow(Math.E, -((firstInputWeight * firstInput) + (secondInputWeight * secondInput) + bias)));
+
+            double outputOfFirstNodeInHiddenLayer = activationFunction(weights[0], inputs[0], weights[1], inputs[1], biases[0]);
+            double outputOfSecondNodeInHiddenLayer = activationFunction(weights[2], inputs[0], weights[3], inputs[1], biases[1]);
+            double firstOutputOfNet = activationFunction(weights[4], outputOfFirstNodeInHiddenLayer, weights[5], outputOfSecondNodeInHiddenLayer, biases[2]);
+            double secondOutputOfNet = activationFunction(weights[6], outputOfFirstNodeInHiddenLayer, weights[7], outputOfSecondNodeInHiddenLayer, biases[3]);
+
+            // Validate that we got the correct output.
+            Assert.IsNotNull(output);
+            Assert.AreEqual(2, output.Length);
+            Assert.AreEqual(firstOutputOfNet, output[0]);
+            Assert.AreEqual(secondOutputOfNet, output[1]);
         }
     }
 }
