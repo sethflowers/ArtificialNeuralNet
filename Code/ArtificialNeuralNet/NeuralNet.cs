@@ -184,7 +184,7 @@ namespace ArtificialNeuralNet
                         sumForOutputFromNeuron += input * weight;
                     }
 
-                    outputsFromLayer[currentOutputIndex++] =
+                    outputsFromLayer[currentOutputIndex++] = ////Math.Tanh(sumForOutputFromNeuron);
                         1 / (1 + Math.Pow(Math.E, -sumForOutputFromNeuron));
                 }
 
