@@ -169,26 +169,32 @@ namespace ArtificialNeuralNet
             for (int layerIndex = 0; layerIndex < neuronsPerLayerAfterInputLayer.Length; layerIndex++)
             {
                 int neuronsInLayer = neuronsPerLayerAfterInputLayer[layerIndex];
-                double[] outputsFromLayer = new double[neuronsInLayer];
-                int currentOutputIndex = 0;
 
-                for (int neuronIndex = 0; neuronIndex < neuronsInLayer; neuronIndex++)
+                unsafe
                 {
-                    double sumForOutputFromNeuron = biases[biasIndex++];
-
-                    for (int inputIndex = 0; inputIndex < inputsToNextLayer.Length; inputIndex++)
+                    fixed (double* outputsFromLayer = new double[neuronsInLayer])
                     {
-                        double input = inputsToNextLayer[inputIndex];
-                        double weight = weights[weightIndex++];
+                        int currentOutputIndex = 0;
 
-                        sumForOutputFromNeuron += input * weight;
+                        for (int neuronIndex = 0; neuronIndex < neuronsInLayer; neuronIndex++)
+                        {
+                            double sumForOutputFromNeuron = biases[biasIndex++];
+
+                            for (int inputIndex = 0; inputIndex < inputsToNextLayer.Length; inputIndex++)
+                            {
+                                double input = inputsToNextLayer[inputIndex];
+                                double weight = weights[weightIndex++];
+
+                                sumForOutputFromNeuron += input * weight;
+                            }
+
+                            outputsFromLayer[currentOutputIndex++] =
+                                1 / (1 + Math.Pow(Math.E, -sumForOutputFromNeuron));
+                        }
+
+                        inputsToNextLayer = *outputsFromLayer;
                     }
-
-                    outputsFromLayer[currentOutputIndex++] =
-                        1 / (1 + Math.Pow(Math.E, -sumForOutputFromNeuron));
                 }
-
-                inputsToNextLayer = outputsFromLayer;
             }
 
             return inputsToNextLayer;
