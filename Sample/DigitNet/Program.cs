@@ -10,6 +10,7 @@ namespace DigitNet
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Threading.Tasks;
     using ArtificialNeuralNet;
     using GeneticAlgorithm;
 
@@ -344,31 +345,33 @@ namespace DigitNet
             double[] biases = chromosome.Genes.Take(numberOfBiases).ToArray();
             double[] weights = chromosome.Genes.Skip(numberOfBiases).ToArray();
 
-            foreach (TrainingData trainingData in trainingDataCollection)
-            {
-                double[] output = NeuralNet.ThinkFast(
-                    inputs: trainingData.Data,
-                    neuronsPerLayerAfterInputLayer: neuronsPerLayerAfterInputLayer,
-                    biases: biases,
-                    weights: weights);
-
-                double highestGuess = double.MinValue;
-                int guess = int.MinValue;
-
-                for (int i = 0; i < output.Length; i++)
+            Parallel.ForEach(
+                trainingDataCollection, 
+                trainingData =>
                 {
-                    if (output[i] > highestGuess)
+                    double[] output = NeuralNet.ThinkFast(
+                        inputs: trainingData.Data,
+                        neuronsPerLayerAfterInputLayer: neuronsPerLayerAfterInputLayer,
+                        biases: biases,
+                        weights: weights);
+
+                    double highestGuess = double.MinValue;
+                    int guess = int.MinValue;
+
+                    for (int i = 0; i < output.Length; i++)
                     {
-                        highestGuess = output[i];
-                        guess = i;
+                        if (output[i] > highestGuess)
+                        {
+                            highestGuess = output[i];
+                            guess = i;
+                        }
                     }
-                }
 
-                if (guess == trainingData.Digit)
-                {
-                    totalCorrect++;
-                }
-            }
+                    if (guess == trainingData.Digit)
+                    {
+                        totalCorrect++;
+                    }
+                });
 
             return Math.Round(((double)totalCorrect / trainingDataCollection.Count) * 100, 5);
         }
