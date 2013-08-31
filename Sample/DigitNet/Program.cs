@@ -67,7 +67,7 @@ namespace DigitNet
         /// <summary>
         /// The mutation type
         /// </summary>
-        private const MutationStrategy MutationType = MutationStrategy.Random;
+        private const MutationStrategy MutationType = MutationStrategy.Function;
 
         /// <summary>
         /// The selection
@@ -78,6 +78,19 @@ namespace DigitNet
         /// The load best ever
         /// </summary>
         private static readonly bool LoadBestEver = false;
+
+        /// <summary>
+        /// The mutation function.
+        /// </summary>
+        private static readonly Action<Chromosome<double>, int> MutationFunction = (chromosome, index) =>
+        {
+            chromosome.Genes[index] = (Random.NextDouble() * 2) - 1;
+        };
+
+        /// <summary>
+        /// The random generator.
+        /// </summary>
+        private static readonly Random Random = new Random();
 
         /// <summary>
         /// The main entry point into the demonstration.
@@ -135,11 +148,10 @@ namespace DigitNet
                     GetFitnessForNet(trainingDataCollection, chromosome, neuronsPerLayer));
 
             // Create a population evolver for the genetic algorithm.
-            Random random = new Random();
             PopulationEvolver<double> populationEvolver =
                 new PopulationEvolver<double>(
-                    selector: CreateChromosomeSelector(random, populationSize),
-                    modifier: CreateChromosomeModifier(random),
+                    selector: CreateChromosomeSelector(Random, populationSize),
+                    modifier: CreateChromosomeModifier(Random),
                     validator: new GenericChromosomeValidator<double>(c => true));
 
             // Create a genetic algorithm.
@@ -214,7 +226,7 @@ namespace DigitNet
                     crossoverRate: CrossoverRate,
                     numberOfCrossoverPoints: NumberOfCrossoverPoints,
                     mutationStrategy: MutationType,
-                    mutationFunction: null);
+                    mutationFunction: MutationFunction);
         }
 
         /// <summary>
