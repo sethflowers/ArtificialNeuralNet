@@ -32,7 +32,7 @@ namespace DigitNet
         /// <summary>
         /// The training size
         /// </summary>
-        private const int TrainingSize = 500;
+        private const int TrainingSize = 10000;
 
         /// <summary>
         /// The number of crossover points
@@ -47,7 +47,7 @@ namespace DigitNet
         /// <summary>
         /// The mutation rate
         /// </summary>
-        private const double MutationRate = 0.0075;
+        private const double MutationRate = 0.00375;
 
         /// <summary>
         /// The weight and bias range
@@ -77,7 +77,7 @@ namespace DigitNet
         /// <summary>
         /// The load best ever
         /// </summary>
-        private static readonly bool LoadBestEver = false;
+        private static readonly bool LoadBestEver = true;
 
         /// <summary>
         /// The mutation function.
